@@ -24,7 +24,7 @@ jobs:
           cd backend
           npm install
 
-      #- name: Run Lint
+      #- name: Run Lintgithub action
       #  run: |
       #    cd backend
       #    npm run lint
@@ -56,38 +56,38 @@ jobs:
         run: |
           docker push \
           ${{ secrets.DOCKER_USERNAME }}/backend:latest
-# */ cd:
-#     name: Continuous Deployment (CD)
-#     runs-on: ubuntu-latest
-#
-#     environment: production1
-#     needs: ci
-#
-#     steps:
-#
-#       - name: Deploy to Server
-#         uses: appleboy/ssh-action@v1.0.3
-#         with:
-#           host: ${{ secrets.SERVER_HOST }}
-#           username: ${{ secrets.SERVER_USER }}
-#           key: ${{ secrets.SERVER_SSH_KEY }}
-#           script: |
-#             docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:latest
-#             docker pull ${{ secrets.DOCKER_USERNAME }}/backend:latest
-#
-#             docker stop frontend || true
-#             docker rm frontend || true
-#
-#             docker stop backend || true
-#             docker rm backend || true
-#
-#             docker run -d \
-#               --name backend \
-#               -p 5000:5000 \
-#               ${{ secrets.DOCKER_USERNAME }}/backend:latest
-#
-#             docker run -d \
-#               --name frontend \
-#               -p 80:80 \
-#               ${{ secrets.DOCKER_USERNAME }}/frontend:latest
-#               /*
+  cd:
+     name: Continuous Deployment (CD)
+     runs-on: ubuntu-latest
+
+     environment: production1
+     needs: ci
+
+     steps:
+
+       - name: Deploy to Server
+         uses: appleboy/ssh-action@v1.0.3
+         with:
+           host: ${{ secrets.SERVER_HOST }}
+           username: ${{ secrets.SERVER_USER }}
+           key: ${{ secrets.SERVER_SSH_KEY }}
+           script: |
+             docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:latest
+             docker pull ${{ secrets.DOCKER_USERNAME }}/backend:latest
+
+             docker stop frontend || true
+             docker rm frontend || true
+
+             docker stop backend || true
+             docker rm backend || true
+
+             docker run -d \
+               --name backend \
+               -p 5000:5000 \
+               ${{ secrets.DOCKER_USERNAME }}/backend:latest
+
+             docker run -d \
+               --name frontend \
+               -p 80:80 \
+               ${{ secrets.DOCKER_USERNAME }}/frontend:latest
+               
