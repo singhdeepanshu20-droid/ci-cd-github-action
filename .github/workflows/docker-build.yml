@@ -37,18 +37,18 @@ jobs:
 
       - name: Build Frontend Image
         run: |
-          docker build \
-          -t jadeja123/frontend:latest \
-          ./frontend
+          docker buildx build --platform linux/amd64 \
+           -t ${{ secrets.DOCKER_USERNAME }}/frontend:latest \
+           ./frontend
 
       - name: Push Frontend Image
         run: |
           docker push \
-          ${{ secrets.DOCKER_USERNAME }}/frontend:latest
+          ${{ secrets.DOCKER_USERNAME }}/frontend:latest 
 
       - name: Build Backend Image
         run: |
-          docker build \
+          docker buildx build --platform linux/amd64 \
           -t ${{ secrets.DOCKER_USERNAME }}/backend:latest \
           ./backend
 
@@ -56,38 +56,38 @@ jobs:
         run: |
           docker push \
           ${{ secrets.DOCKER_USERNAME }}/backend:latest
-
-  cd:
-    name: Continuous Deployment (CD)
-    runs-on: ubuntu-latest
-
-    environment: production1     
-    needs: ci
-
-    steps:
-
-      - name: Deploy to Server
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          script: |
-            docker pull jadeja123/frontend:latest
-            docker pull jadeja123/backend:latest
-
-            docker stop frontend || true
-            docker rm frontend || true
-
-            docker stop backend || true
-            docker rm backend || true
-
-            docker run -d \
-              --name backend \
-              -p 5000:5000 \
-              jadeja123/backend:latest
-
-            docker run -d \
-              --name frontend \
-              -p 80:80 \
-              jadeja123/frontend:latest
+# */ cd:
+#     name: Continuous Deployment (CD)
+#     runs-on: ubuntu-latest
+#
+#     environment: production1
+#     needs: ci
+#
+#     steps:
+#
+#       - name: Deploy to Server
+#         uses: appleboy/ssh-action@v1.0.3
+#         with:
+#           host: ${{ secrets.SERVER_HOST }}
+#           username: ${{ secrets.SERVER_USER }}
+#           key: ${{ secrets.SERVER_SSH_KEY }}
+#           script: |
+#             docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:latest
+#             docker pull ${{ secrets.DOCKER_USERNAME }}/backend:latest
+#
+#             docker stop frontend || true
+#             docker rm frontend || true
+#
+#             docker stop backend || true
+#             docker rm backend || true
+#
+#             docker run -d \
+#               --name backend \
+#               -p 5000:5000 \
+#               ${{ secrets.DOCKER_USERNAME }}/backend:latest
+#
+#             docker run -d \
+#               --name frontend \
+#               -p 80:80 \
+#               ${{ secrets.DOCKER_USERNAME }}/frontend:latest
+#               /*
