@@ -60,7 +60,7 @@ jobs:
      name: Continuous Deployment (CD)
      runs-on: ubuntu-latest
 
-     environment: production1
+     environment: CICD-Production
      needs: ci
 
      steps:
